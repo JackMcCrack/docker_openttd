@@ -1,38 +1,26 @@
 # BUILD ENVIRONMENT
-FROM debian:stable-slim AS ottd_build
+FROM debian:stable-slim AS ottd_jre_build
 
-ARG OPENTTD_VERSION="1.10.1"
-ARG OPENGFX_VERSION="0.6.0"
+#ARG OPENTTD_VERSION="1.10.1"
+ARG OPENTTD_JGR_RELEASE="0.42.2"
+ARG OPENGFX_VERSION="0.6.1"
 
 # Get things ready
 RUN mkdir -p /config \
-    && mkdir /tmp/src
+    && mkdir /tmp/unpack
 
 # Install build dependencies
 RUN apt-get update && \
     apt-get install -y \
     unzip \
     wget \
-    git \
-    g++ \
-    make \
-    cmake \
-    patch \
-    zlib1g-dev \
-    liblzma-dev \
-    liblzo2-dev \
-    pkg-config
+    xz
 
-# Build OpenTTD itself
-WORKDIR /tmp/src
-
-RUN git clone https://github.com/OpenTTD/OpenTTD.git . \
-    && git fetch --tags \
-    && git checkout ${OPENTTD_VERSION}
-
-# Perform the build with the build script (1.11 switches to cmake, so use a script for decision making)
-ADD builder.sh /usr/local/bin/builder
-RUN chmod +x /usr/local/bin/builder && builder && rm /usr/local/bin/builder
+# download and unpack the release
+WORKDIR /tmp/unpack
+RUN wget -O openttdjre.tar.xz https://github.com/JGRennison/OpenTTD-patches/releases/download/jgrpp-${OPENTTD_JGR_RELEASE}/openttd-jgrpp-${OPENTTD_JGR_RELEASE}-linux-generic-amd64.tar.xz \
+    && tar -xf openttdjre.tar.xz \
+    && mv openttd-jgrpp-${OPENTTD_JGR_RELEASE}-linux-generic-amd64 /app
 
 # Add the latest graphics files
 ## Install OpenGFX
@@ -47,15 +35,15 @@ RUN mkdir -p /app/data/baseset/ \
 # DEPLOY ENVIRONMENT
 
 FROM debian:stable-slim
-ARG OPENTTD_VERSION="1.10.1"
+ARG OPENTTD_JGR_RELEASE="JGE_0.42.2"
 LABEL org.label-schema.name="OpenTTD" \
-      org.label-schema.description="Lightweight build of OpenTTD, designed for server use, with some extra helping treats." \
-      org.label-schema.url="https://github.com/ropenttd/docker_openttd" \
-      org.label-schema.vcs-url="https://github.com/openttd/openttd" \
-      org.label-schema.vendor="Reddit OpenTTD" \
+      org.label-schema.description="OpenTTD JGR, designed for server use, with some extra helping treats." \
+      org.label-schema.url="https://github.com/JackMcCrack/docker_openttd" \
+      org.label-schema.vcs-url="https://github.com/JackMcCrack/docker_openttd" \
+      org.label-schema.vendor="JackMcCrack" \
       org.label-schema.version=$OPENTTD_VERSION \
       org.label-schema.schema-version="1.0"
-MAINTAINER duck. <me@duck.me.uk>
+MAINTAINER Jack <jackmccrack@entropia.de>
 
 # Setup the environment and install runtime dependencies
 RUN mkdir -p /config \
