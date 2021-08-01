@@ -14,7 +14,7 @@ RUN apt-get update && \
     apt-get install -y \
     unzip \
     wget \
-    xz
+    xz-utils 
 
 # download and unpack the release
 WORKDIR /tmp/unpack
@@ -58,7 +58,7 @@ RUN mkdir -p /config \
 WORKDIR /config
 
 # Copy the game data from the build container
-COPY --from=ottd_build /app /app
+COPY --from=ottd_jre_build /app /app
 
 # Add the entrypoint
 ADD entrypoint.sh /usr/local/bin/entrypoint
