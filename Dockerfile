@@ -2,7 +2,7 @@
 FROM debian:stable-slim AS ottd_jre_build
 
 #ARG OPENTTD_VERSION="1.10.1"
-ARG OPENTTD_JGR_RELEASE="0.42.2"
+ARG OPENTTD_JGR_RELEASE="0.42.3"
 ARG OPENGFX_VERSION="0.6.1"
 
 # Get things ready
@@ -35,7 +35,7 @@ RUN mkdir -p /app/data/baseset/ \
 # DEPLOY ENVIRONMENT
 
 FROM debian:stable-slim
-ARG OPENTTD_JGR_RELEASE="JGE_0.42.2"
+ARG OPENTTD_JGR_RELEASE="JGE_0.42.3"
 LABEL org.label-schema.name="OpenTTD" \
       org.label-schema.description="OpenTTD JGR, designed for server use, with some extra helping treats." \
       org.label-schema.url="https://github.com/JackMcCrack/docker_openttd" \
